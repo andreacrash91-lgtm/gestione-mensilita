@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Gestione Personale</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        .animate-bounce { animation: bounce 1s infinite; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const Calendar = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>;
+        const Users = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>;
+        const DollarSign = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>;
+        const TrendingUp = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>;
+        const Plus = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>;
+        const Trash2 = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>;
+        const Check = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>;
+        const X = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>;
+        const ChevronLeft = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>;
+        const ChevronRight = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>;
+        const Bell = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>;
+        const AlertCircle = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>;
+
+        const GestionalePersonale = () => {
+          const [dipendenti, setDipendenti] = useState(() => { const s = localStorage.getItem('dipendenti'); return s ? JSON.parse(s) : []; });
+          const [assenze, setAssenze] = useState(() => { const s = localStorage.getItem('assenze'); return s ? JSON.parse(s) : []; });
+          const [bonusProduzioni, setBonusProduzioni] = useState(() => { const s = localStorage.getItem('bonusProduzioni'); return s ? JSON.parse(s) : []; });
+          const [pagamenti, setPagamenti] = useState(() => { const s = localStorage.getItem('pagamenti'); return s ? JSON.parse(s) : []; });
+          const [notificheVisualizzate, setNotificheVisualizzate] = useState(() => { const s = localStorage.getItem('notificheVisualizzate'); return s ? JSON.parse(s) : []; });
+          const [mostraNotifica, setMostraNotifica] = useState(false);
+          const [vistaCorrente, setVistaCorrente] = useState('home');
+          const [meseCorrente, setMeseCorrente] = useState(new Date());
+          const [formDipendente, setFormDipendente] = useState({ nome: '', costoGiornaliero: '', dataInizio: '' });
+          const [formAssenza, setFormAssenza] = useState({ dipendenteId: '', data: '', tipo: 'malattia' });
+          const [formBonus, setFormBonus] = useState({ dipendenteId: '', importo: '', descrizione: '' });
+
+          useEffect(() => { localStorage.setItem('dipendenti', JSON.stringify(dipendenti)); }, [dipendenti]);
+          useEffect(() => { localStorage.setItem('assenze', JSON.stringify(assenze)); }, [assenze]);
+          useEffect(() => { localStorage.setItem('bonusProduzioni', JSON.stringify(bonusProduzioni)); }, [bonusProduzioni]);
+          useEffect(() => { localStorage.setItem('pagamenti', JSON.stringify(pagamenti)); }, [pagamenti]);
+          useEffect(() => { localStorage.setItem('notificheVisualizzate', JSON.stringify(notificheVisualizzate)); }, [notificheVisualizzate]);
+          
+          useEffect(() => {
+            const oggi = new Date();
+            const ultimoGiorno = new Date(oggi.getFullYear(), oggi.getMonth() + 1, 0).getDate();
+            const giorniAllaFine = ultimoGiorno - oggi.getDate();
+            const meseAnnoCorrente = `${oggi.getFullYear()}-${oggi.getMonth()}`;
+            const giaPagato = pagamenti.find(p => p.meseAnno === meseAnnoCorrente)?.pagato;
+            const notificaGiaMostrata = notificheVisualizzate.includes(meseAnnoCorrente);
+            if (giorniAllaFine <= 3 && giorniAllaFine >= 0 && !giaPagato && !notificaGiaMostrata) {
+              setMostraNotifica(true);
+              setNotificheVisualizzate([...notificheVisualizzate, meseAnnoCorrente]);
+            }
+          }, []);
+
+          const segnaPagato = (meseAnno, pagato) => {
+            const esistente = pagamenti.find(p => p.meseAnno === meseAnno);
+            if (esistente) {
+              setPagamenti(pagamenti.map(p => p.meseAnno === meseAnno ? { ...p, pagato, dataPagamento: pagato ? new Date().toISOString() : null } : p));
+            } else {
+              setPagamenti([...pagamenti, { meseAnno, pagato, dataPagamento: pagato ? new Date().toISOString() : null }]);
+            }
+            setMostraNotifica(false);
+          };
+
+          const getMesePagamento = (meseAnno) => pagamenti.find(p => p.meseAnno === meseAnno);
+          const resetTuttiDati = () => {
+            if (window.confirm('⚠️ Questa azione cancellerà tutti i dati. Sei sicuro?')) {
+              localStorage.clear();
+              setDipendenti([]);
+              setAssenze([]);
+              setBonusProduzioni([]);
+              setPagamenti([]);
+              setNotificheVisualizzate([]);
+              alert('✅ Dati cancellati!');
+            }
+          };
+
+          const esportaDati = () => {
+            const dati = { dipendenti, assenze, bonusProduzioni, pagamenti, dataEsportazione: new Date().toISOString() };
+            const blob = new Blob([JSON.stringify(dati, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `backup-gestionale-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+          };
+
+          const importaDati = (event) => {
+            const file = event.target.files[0];
+            if (file) {
+              const reader = new FileReader();
+              reader.onload = (e) => {
+                try {
+                  const dati = JSON.parse(e.target.result);
+                  if (window.confirm('Ripristinare il backup?')) {
+                    setDipendenti(dati.dipendenti || []);
+                    setAssenze(dati.assenze || []);
+                    setBonusProduzioni(dati.bonusProduzioni || []);
+                    setPagamenti(dati.pagamenti || []);
+                    alert('✅ Backup ripristinato!');
+                  }
+                } catch { alert('❌ Errore nel file!'); }
+              };
+              reader.readAsText(file);
+            }
+          };
+
+          const giorniDelMese = () => new Date(meseCorrente.getFullYear(), meseCorrente.getMonth() + 1, 0).getDate();
+          const giorniLavorativi = () => {
+            let giorni = 0;
+            for (let i = 1; i <= giorniDelMese(); i++) {
+              const giorno = new Date(meseCorrente.getFullYear(), meseCorrente.getMonth(), i).getDay();
+              if (giorno !== 0) giorni += giorno === 6 ? 0.5 : 1;
+            }
+            return giorni;
+          };
+
+          const aggiungiDipendente = () => {
+            if (formDipendente.nome && formDipendente.costoGiornaliero && formDipendente.dataInizio) {
+              setDipendenti([...dipendenti, { id: Date.now(), ...formDipendente, costoGiornaliero: parseFloat(formDipendente.costoGiornaliero) }]);
+              setFormDipendente({ nome: '', costoGiornaliero: '', dataInizio: '' });
+            }
+          };
+
+          const rimuoviDipendente = (id) => {
+            setDipendenti(dipendenti.filter(d => d.id !== id));
+            setAssenze(assenze.filter(a => a.dipendenteId !== id));
+            setBonusProduzioni(bonusProduzioni.filter(b => b.dipendenteId !== id));
+          };
+
+          const aggiungiAssenza = () => {
+            if (formAssenza.dipendenteId && formAssenza.data) {
+              setAssenze([...assenze, { id: Date.now(), ...formAssenza, dipendenteId: parseInt(formAssenza.dipendenteId) }]);
+              setFormAssenza({ dipendenteId: '', data: '', tipo: 'malattia' });
+            }
+          };
+
+          const rimuoviAssenza = (id) => setAssenze(assenze.filter(a => a.id !== id));
+          const aggiungiBonus = () => {
+            if (formBonus.dipendenteId && formBonus.importo) {
+              const meseAnno = `${meseCorrente.getFullYear()}-${meseCorrente.getMonth()}`;
+              setBonusProduzioni([...bonusProduzioni, { id: Date.now(), ...formBonus, dipendenteId: parseInt(formBonus.dipendenteId), importo: parseFloat(formBonus.importo), meseAnno }]);
+              setFormBonus({ dipendenteId: '', importo: '', descrizione: '' });
+            }
+          };
+
+          const dipendenteLavoraInGiorno = (dipendente, data) => new Date(data) >= new Date(dipendente.dataInizio);
+          const calcolaPagaMensile = (dipendente) => {
+            const anno = meseCorrente.getFullYear();
+            const mese = meseCorrente.getMonth();
+            const dataInizio = new Date(dipendente.dataInizio);
+            let giorniTotali = 0;
+            for (let i = 1; i <= giorniDelMese(); i++) {
+              const data = new Date(anno, mese, i);
+              const giorno = data.getDay();
+              if (giorno !== 0 && data >= dataInizio) giorniTotali += giorno === 6 ? 0.5 : 1;
+            }
+            const meseAnno = `${anno}-${mese}`;
+            const assenzeDelMese = assenze.filter(a => {
+              if (a.dipendenteId !== dipendente.id) return false;
+              const d = new Date(a.data);
+              return d.getMonth() === mese && d.getFullYear() === anno;
+            });
+            let giorniAssenti = 0;
+            assenzeDelMese.forEach(a => {
+              const giorno = new Date(a.data).getDay();
+              giorniAssenti += giorno === 6 ? 0.5 : 1;
+            });
+            const giorniPresenti = giorniTotali - giorniAssenti;
+            const pagaBase = giorniPresenti * dipendente.costoGiornaliero;
+            const bonusMese = bonusProduzioni.filter(b => b.dipendenteId === dipendente.id && b.meseAnno === meseAnno).reduce((sum, b) => sum + b.importo, 0);
+            return { giorniTotali, giorniAssenti, giorniPresenti, pagaBase, bonus: bonusMese, totale: pagaBase + bonusMese };
+          };
+
+          const CalendarioMensile = () => {
+            const anno = meseCorrente.getFullYear();
+            const mese = meseCorrente.getMonth();
+            const primoGiorno = new Date(anno, mese, 1).getDay();
+            const giorniMese = giorniDelMese();
+            const giorniSettimana = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
+            const calendarioGiorni = [];
+            for (let i = 0; i < primoGiorno; i++) calendarioGiorni.push(null);
+            for (let i = 1; i <= giorniMese; i++) calendarioGiorni.push(i);
+            
+            const getDipendentiDelGiorno = (giorno) => {
+              if (!giorno) return [];
+              const data = new Date(anno, mese, giorno);
+              return dipendenti.filter(dip => {
+                if (!dipendenteLavoraInGiorno(dip, data)) return false;
+                return !assenze.find(a => {
+                  const d = new Date(a.data);
+                  return a.dipendenteId === dip.id && d.getDate() === giorno && d.getMonth() === mese && d.getFullYear() === anno;
+                });
+              });
+            };
+
+            const getAssenzeDelGiorno = (giorno) => {
+              if (!giorno) return [];
+              const data = new Date(anno, mese, giorno);
+              return dipendenti.filter(dip => {
+                if (!dipendenteLavoraInGiorno(dip, data)) return false;
+                return assenze.find(a => {
+                  const d = new Date(a.data);
+                  return a.dipendenteId === dip.id && d.getDate() === giorno && d.getMonth() === mese && d.getFullYear() === anno;
+                });
+              });
+            };
+            
+            return (
+              <div className="bg-white rounded-lg shadow-lg p-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-xl font-bold flex items-center gap-2">
+                    <Calendar className="text-blue-600" />
+                    Calendario Presenze
+                  </h3>
+                  <div className="flex gap-2">
+                    <button onClick={() => setMeseCorrente(new Date(meseCorrente.getFullYear(), meseCorrente.getMonth() - 1))} className="p-2 hover:bg-gray-100 rounded">
+                      <ChevronLeft size={20} />
+                    </button>
+                    <span className="px-4 py-2 font-semibold">
+                      {meseCorrente.toLocaleDateString('it-IT', { month: 'long', year: 'numeric' })}
+                    </span>
+                    <button onClick={() => setMeseCorrente(new Date(meseCorrente.getFullYear(), meseCorrente.getMonth() + 1))} className="p-2 hover:bg-gray-100 rounded">
+                      <ChevronRight size={20} />
+                    </button>
+                  </div>
+                </div>
+                <div className="grid grid-cols-7 gap-1">
+                  {giorniSettimana.map(g => <div key={g} className="text-center font-bold text-sm p-2 bg-gray-100 rounded">{g}</div>)}
+                  {calendarioGiorni.map((giorno, index) => {
+                    const isWeekend = index % 7 === 0;
+                    const isSaturday = index % 7 === 6;
+                    const dipendentiPresenti = getDipendentiDelGiorno(giorno);
+                    const dipendentiAssenti = getAssenzeDelGiorno(giorno);
+                    return (
+                      <div key={index} className={`min-h-24 border rounded p-1 ${!giorno ? 'bg-gray-50' : isWeekend ? 'bg-gray-100' : isSaturday ? 'bg-blue-50' : 'bg-white hover:bg-blue-50'}`}>
+                        {giorno && (
+                          <>
+                            <div className="text-right text-sm font-semibold mb-1">
+                              {giorno}
+                              {isSaturday && <span className="text-xs text-blue-600 ml-1">½</span>}
+                            </div>
+                            {!isWeekend && (
+                              <div className="space-y-1">
+                                {dipendentiPresenti.map(dip => (
+                                  <div key={dip.id} className={`text-xs ${isSaturday ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'} px-1 py-0.5 rounded truncate`} title={`${dip.nome}${isSaturday ? ' (½)' : ''}`}>
+                                    {dip.nome.split(' ')[0]}
+                                  </div>
+                                ))}
+                                {dipendentiAssenti.map(dip => (
+                                  <div key={dip.id} className="text-xs bg-red-100 text-red-800 px-1 py-0.5 rounded truncate" title={`${dip.nome} - Assente`}>
+                                    {dip.nome.split(' ')[0]} ❌
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="mt-4 flex gap-4 text-sm flex-wrap">
+                  <div className="flex items-center gap-2"><div className="w-4 h-4 bg-green-100 rounded"></div><span>Presente</span></div>
+                  <div className="flex items-center gap-2"><div className="w-4 h-4 bg-blue-100 rounded"></div><span>Sabato (½)</span></div>
+                  <div className="flex items-center gap-2"><div className="w-4 h-4 bg-red-100 rounded"></div><span>Assente</span></div>
+                  <div className="flex items-center gap-2"><div className="w-4 h-4 bg-gray-100 rounded"></div><span>Domenica</span></div>
+                </div>
+              </div>
+            );
+          };
+
+          const Home = () => {
+            const meseAnnoCorrente = `${meseCorrente.getFullYear()}-${meseCorrente.getMonth()}`;
+            const statoPagamento = getMesePagamento(meseAnnoCorrente);
+            const costoTotaleMese = dipendenti.reduce((sum, d) => sum + calcolaPagaMensile(d).totale, 0);
+            return (
+              <div className="space-y-6">
+                <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-6 rounded-lg shadow-lg">
+                  <h2 className="text-2xl font-bold mb-2">{meseCorrente.toLocaleDateString('it-IT', { month: 'long', year: 'numeric' })}</h2>
+                  <p className="text-blue-100">Giorni lavorativi: {giorniLavorativi()}</p>
+                </div>
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div className="bg-white p-4 rounded-lg shadow border-l-4 border-green-500">
+                    <div className="flex items-center justify-between">
+                      <div><p className="text-gray-600 text-sm">Dipendenti Attivi</p><p className="text-3xl font-bold text-gray-800">{dipendenti.length}</p></div>
+                      <Users className="text-green-500" size={40} />
+                    </div>
+                  </div>
+                  <div className="bg-white p-4 rounded-lg shadow border-l-4 border-orange-500">
+                    <div className="flex items-center justify-between">
+                      <div><p className="text-gray-600 text-sm">Assenze Mese</p><p className="text-3xl font-bold text-gray-800">{assenze.filter(a => {const d = new Date(a.data); return d.getMonth() === meseCorrente.getMonth() && d.getFullYear() === meseCorrente.getFullYear();}).length}</p></div>
+                      <X className="text-orange-500" size={40} />
+                    </div>
+                  </div>
+                  <div className="bg-white p-4 rounded-lg shadow border-l-4 border-blue-500">
+                    <div className="flex items-center justify-between">
+                      <div><p className="text-gray-600 text-sm">Costo Totale</p><p className="text-3xl font-bold text-gray-800">€{costoTotaleMese.toFixed(2)}</p></div>
+                      <DollarSign className="text-blue-500" size={40} />
+                    </div>
+                  </div>
+                </div>
+                <div className={`p-6 rounded-lg shadow-lg ${statoPagamento?.pagato ? 'bg-green-50 border-2 border-green-500' : 'bg-yellow-50 border-2 border-yellow-500'}`}>
+                  <div className="flex items-center justify-between mb-4 flex-wrap gap-4">
+                    <div className="flex items-center gap-3">
+                      {statoPagamento?.pagato ? <Check className="text-green-600" size={32} /> : <AlertCircle className="text-yellow-600" size={32} />}
+                      <div>
+                        <h3 className="text-xl font-bold">Stato Pagamento - {meseCorrente.toLocaleDateString('it-IT', { month: 'long', year: 'numeric' })}</h3>
+                        <p className="text-sm text-gray-600">Totale da pagare: <span className="font-bold">€{costoTotaleMese.toFixed(2)}</span></p>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      {!statoPagamento?.pagato ? (
+                        <button onClick={() => segnaPagato(meseAnnoCorrente, true)} className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2 font-semibold">
+                          <Check size={20} />Segna come Pagato
+                        </button>
+                      ) : (
+                        <div className="text-right">
+                          <p className="text-green-700 font-bold text-lg">✓ Pagato</p>
+                          <p className="text-xs text-gray-600">{new Date(statoPagamento.dataPagamento).toLocaleDateString('it-IT')}</p>
+                          <button onClick={() => segnaPagato(meseAnnoCorrente, false)} className="mt-2 text-sm text-red-600 hover:underline">Annulla</button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <CalendarioMensile />
+                <div className="bg-white rounded-lg shadow-lg p-6">
+                  <h3 className="text-xl font-bold mb-4 flex items-center gap-2"><DollarSign className="text-blue-600" />Riepilogo Paghe</h3>
+                  {dipendenti.length === 0 ? (
+                    <p className="text-gray-500 text-center py-8">Nessun dipendente inserito</p>
+                  ) : (
+                    <div className="space-y-4">
+                      {dipendenti.map(dipendente => {
+                        const paga = calcolaPagaMensile(dipendente);
+                        const dataInizio = new Date(dipendente.dataInizio);
+                        const meseInizio = dataInizio.getMonth() === meseCorrente.getMonth() && dataInizio.getFullYear() === meseCorrente.getFullYear();
+                        return (
+                          <div key={dipendente.id} className="border rounded-lg p-4 hover:bg-gray-50">
+                            <div className="flex justify-between items-start mb-3">
+                              <div>
+                                <h4 className="font-bold text-lg">{dipendente.nome}</h4>
+                                <p className="text-sm text-gray-600">€{dipendente.costoGiornaliero}/giorno</p>
+                                <p className="text-xs text-gray-500">Inizio: {dataInizio.toLocaleDateString('it-IT')}{meseInizio && <span className="ml-2 text-blue-600">⭐ Iniziato questo mese</span>}</p>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-2xl font-bold text-green-600
+">€{paga.totale.toFixed(2)}</p>
+                                <p className="text-xs text-gray-500">Totale paga</p>
+                              </div>
+                            </div>
+                            <div className="grid grid-cols-2 md:grid-cols-5 gap-3 text-sm">
+                              <div><p className="text-gray-600">Giorni lavorativi</p><p className="font-semibold">{paga.giorniTotali.toFixed(1)}</p></div>
+                              <div><p className="text-gray-600">Giorni presenti</p><p className="font-semibold text-green-600">{paga.giorniPresenti.toFixed(1)}</p></div>
+                              <div><p className="text-gray-600">Assenze</p><p className="font-semibold text-red-600">{paga.giorniAssenti.toFixed(1)}</p></div>
+                              <div><p className="text-gray-600">Paga base</p><p className="font-semibold">€{paga.pagaBase.toFixed(2)}</p></div>
+                              <div><p className="text-gray-600">Bonus</p><p className="font-semibold text-blue-600">€{paga.bonus.toFixed(2)}</p></div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          };
+
+          const GestioneDipendenti = () => (
+            <div className="space-y-6">
+              <div className="bg-white rounded-lg shadow-lg p-6">
+                <h3 className="text-xl font-bold mb-4">Aggiungi Dipendente</h3>
+                <div className="space-y-4">
+                  <div><label className="block text-sm font-medium mb-1">Nome Completo</label><input type="text" value={formDipendente.nome} onChange={(e) => setFormDipendente({...formDipendente, nome: e.target.value})} className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Es. Mario Rossi" /></div>
+                  <div><label className="block text-sm font-medium mb-1">Costo Giornaliero (€)</label><input type="number" step="0.01" value={formDipendente.costoGiornaliero} onChange={(e) => setFormDipendente({...formDipendente, costoGiornaliero: e.target.value})} className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Es. 120.00" /></div>
+                  <div><label className="block text-sm font-medium mb-1">Data Inizio Prestazione</label><input type="date" value={formDipendente.dataInizio} onChange={(e) => setFormDipendente({...formDipendente, dataInizio: e.target.value})} className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" /></div>
+                  <button onClick={aggiungiDipendente} className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2"><Plus size={20} />Aggiungi Dipendente</button>
+                </div>
+              </div>
+              <div className="bg-white rounded-lg shadow-lg p-6">
+                <h3 className="text-xl font-bold mb-4">Elenco Dipendenti</h3>
+                {dipendenti.length === 0 ? (
+                  <p className="text-gray-500 text-center py-4">Nessun dipendente presente</p>
+                ) : (
+                  <div className="space-y-2">
+                    {dipendenti.map(dipendente => (
+                      <div key={dipendente.id} className="flex justify-between items-center p-4 border rounded-lg hover:bg-gray-50">
+                        <div>
+                          <p className="font-semibold">{dipendente.nome}</p>
+                          <p className="text-sm text-gray-600">€{dipendente.costoGiornaliero}/giorno</p>
+                          <p className="text-xs text-gray-500">Dal: {new Date(dipendente.dataInizio).toLocaleDateString('it-IT')}</p>
+                        </div>
+                        <button onClick={() => rimuoviDipendente(dipendente.id)} className="text-red-600 hover:bg-red-50 p-2 rounded"><Trash2 size={20} /></button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+
+          const GestioneAssenze = () => (
+            <div className="space-y-6">
+              <div className="bg-white rounded-lg shadow-lg p-6">
+                <h3 className="text-xl font-bold mb-4">Registra Assenza</h3>
+                <div className="space-y-4">
+                  <div><label className="block text-sm font-medium mb-1">Dipendente</label><select value={formAssenza.dipendenteId} onChange={(e) => setFormAssenza({...formAssenza, dipendenteId: e.target.value})} className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"><option value="">Seleziona dipendente</option>{dipendenti.map(d => <option key={d.id} value={d.id}>{d.nome}</option>)}</select></div>
+                  <div><label className="block text-sm font-medium mb-1">Data</label><input type="date" value={formAssenza.data} onChange={(e) => setFormAssenza({...formAssenza, data: e.target.value})} className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" /></div>
+                  <div><label className="block text-sm font-medium mb-1">Tipo di Assenza</label><select value={formAssenza.tipo} onChange={(e) => setFormAssenza({...formAssenza, tipo: e.target.value})} className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"><option value="malattia">Malattia</option><option value="ferie">Ferie</option><option value="permesso">Permesso</option><option value="altro">Altro</option></select></div>
+                  <button onClick={aggiungiAssenza} className="w-full bg-orange-600 text-white py-2 rounded-lg hover:bg-orange-700 flex items-center justify-center gap-2"><Plus size={20} />Registra Assenza</button>
+                </div>
+              </div>
+              <div className="bg-white rounded-lg shadow-lg p-6">
+                <h3 className="text-xl font-bold mb-4">Assenze Registrate</h3>
+                {assenze.length === 0 ? (
+                  <p className="text-gray-500 text-center py-4">Nessuna assenza registrata</p>
+                ) : (
+                  <div className="space-y-2">
+                    {assenze.map(assenza => {
+                      const dipendente = dipendenti.find(d => d.id === assenza.dipendenteId);
+                      return (
+                        <div key={assenza.id} className="flex justify-between items-center p-4 border rounded-lg hover:bg-gray-50">
+                          <div>
+                            <p className="font-semibold">{dipendente?.nome}</p>
+                            <p className="text-sm text-gray-600">{new Date(assenza.data).toLocaleDateString('it-IT')} - {assenza.tipo}</p>
+                          </div>
+                          <button onClick={() => rimuoviAssenza(assenza.id)} className="text-red-600 hover:bg-red-50 p-2 rounded"><Trash2 size={20} /></button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+
+          const GestioneBonus = () => (
+            <div className="space-y-6">
+              <div className="bg-white rounded-lg shadow-lg p-6">
+                <h3 className="text-xl font-bold mb-4">Aggiungi Bonus Produzione</h3>
+                <div className="space-y-4">
+                  <div><label className="block text-sm font-medium mb-1">Dipendente</label><select value={formBonus.dipendenteId} onChange={(e) => setFormBonus({...formBonus, dipendenteId: e.target.value})} className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"><option value="">Seleziona dipendente</option>{dipendenti.map(d => <option key={d.id} value={d.id}>{d.nome}</option>)}</select></div>
+                  <div><label className="block text-sm font-medium mb-1">Importo (€)</label><input type="number" step="0.01" value={formBonus.importo} onChange={(e) => setFormBonus({...formBonus, importo: e.target.value})} className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Es. 250.00" /></div>
+                  <div><label className="block text-sm font-medium mb-1">Descrizione</label><input type="text" value={formBonus.descrizione} onChange={(e) => setFormBonus({...formBonus, descrizione: e.target.value})} className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Es. Obiettivi raggiunti Q4" /></div>
+                  <button onClick={aggiungiBonus} className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 flex items-center justify-center gap-2"><TrendingUp size={20} />Aggiungi Bonus</button>
+                </div>
+              </div>
+              <div className="bg-white rounded-lg shadow-lg p-6">
+                <h3 className="text-xl font-bold mb-4">Bonus del Mese</h3>
+                {bonusProduzioni.filter(b => b.meseAnno === `${meseCorrente.getFullYear()}-${meseCorrente.getMonth()}`).length === 0 ? (
+                  <p className="text-gray-500 text-center py-4">Nessun bonus registrato per questo mese</p>
+                ) : (
+                  <div className="space-y-2">
+                    {bonusProduzioni.filter(b => b.meseAnno === `${meseCorrente.getFullYear()}-${meseCorrente.getMonth()}`).map(bonus => {
+                      const dipendente = dipendenti.find(d => d.id === bonus.dipendenteId);
+                      return (
+                        <div key={bonus.id} className="p-4 border rounded-lg hover:bg-gray-50">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <p className="font-semibold">{dipendente?.nome}</p>
+                              <p className="text-sm text-gray-600">{bonus.descrizione}</p>
+                            </div>
+                            <p className="text-lg font-bold text-green-600">€{bonus.importo.toFixed(2)}</p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+
+          return (
+            <div className="min-h-screen bg-gray-100">
+              {mostraNotifica && (
+                <div className="fixed top-4 right-4 z-50 bg-yellow-500 text-white p-6 rounded-lg shadow-2xl max-w-md animate-bounce">
+                  <div className="flex items-start gap-3">
+                    <Bell size={28} className="flex-shrink-0 mt-1" />
+                    <div className="flex-1">
+                      <h3 className="font-bold text-lg mb-2">⚠️ Promemoria Pagamento</h3>
+                      <p className="mb-4">Tra 3 giorni sarà la fine del mese di <strong>{new Date().toLocaleDateString('it-IT', { month: 'long', year: 'numeric' })}</strong></p>
+                      <p className="text-sm mb-4">Totale da pagare: <strong className="text-xl">€{dipendenti.reduce((sum, d) => sum + calcolaPagaMensile(d).totale, 0).toFixed(2)}</strong></p>
+                      <div className="flex gap-2">
+                        <button onClick={() => { const oggi = new Date(); const meseAnno = `${oggi.getFullYear()}-${oggi.getMonth()}`; segnaPagato(meseAnno, true); }} className="flex-1 bg-green-600 hover:bg-green-700 px-4 py-2 rounded font-semibold">Segna Pagato</button>
+                        <button onClick={() => setMostraNotifica(false)} className="flex-1 bg-white text-yellow-700 hover:bg-gray-100 px-4 py-2 rounded font-semibold">Ricorda Dopo</button>
+                      </div>
+                    </div>
+                    <button onClick={() => setMostraNotifica(false)} className="text-white hover:bg-yellow-600 rounded p-1"><X size={20} /></button>
+                  </div>
+                </div>
+              )}
+              <div className="bg-blue-600 text-white p-4 shadow-lg">
+                <div className="max-w-7xl mx-auto flex justify-between items-center flex-wrap gap-4">
+                  <h1 className="text-2xl font-bold">Sistema Gestione Personale</h1>
+                  <div className="flex gap-2 flex-wrap">
+                    <button onClick={esportaDati} className="px-4 py-2 bg-green-500 hover:bg-green-600 rounded-lg text-sm font-semibold flex items-center gap-2" title="Scarica backup"><DollarSign size={16} />Backup</button>
+                    <label className="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 rounded-lg text-sm font-semibold cursor-pointer flex items-center gap-2"><TrendingUp size={16} />Ripristina<input type="file" accept=".json" onChange={importaDati} className="hidden" /></label>
+                    <button onClick={resetTuttiDati} className="px-4 py-2 bg-red-500 hover:bg-red-600 rounded-lg text-sm font-semibold" title="Cancella tutti i dati">Reset</button>
+                  </div>
+                </div>
+              </div>
+              <div className="max-w-7xl mx-auto p-4">
+                <div className="mb-6 bg-white rounded-lg shadow p-4">
+                  <div className="flex flex-wrap gap-2">
+                    <button onClick={() => setVistaCorrente('home')} className={`flex items-center gap-2 px-4 py-2 rounded-lg ${vistaCorrente === 'home' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}><Calendar size={20} />Home</button>
+                    <button onClick={() => setVistaCorrente('dipendenti')} className={`flex items-center gap-2 px-4 py-2 rounded-lg ${vistaCorrente === 'dipendenti' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}><Users size={20} />Dipendenti</button>
+                    <button onClick={() => setVistaCorrente('assenze')} className={`flex items-center gap-2 px-4 py-2 rounded-lg ${vistaCorrente === 'assenze' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}><X size={20} />Assenze</button>
+                    <button onClick={() => setVistaCorrente('bonus')} className={`flex items-center gap-2 px-4 py-2 rounded-lg ${vistaCorrente === 'bonus' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}><TrendingUp size={20} />Bonus</button>
+                  </div>
+                </div>
+                {vistaCorrente === 'home' && <Home />}
+                {vistaCorrente === 'dipendenti' && <GestioneDipendenti />}
+                {vistaCorrente === 'assenze' && <GestioneAssenze />}
+                {vistaCorrente === 'bonus' && <GestioneBonus />}
+              </div>
+            </div>
+          );
+        };
+
+        ReactDOM.render(<GestionalePersonale />, document.getElementById('root'));
+    </script>
+</body>
+</html>
